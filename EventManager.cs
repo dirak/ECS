@@ -136,30 +136,30 @@ namespace ECS
 
         public int ProcessEvents(float dt)
         {
-            if (this.isProcessing)
+            if (isProcessing)
             {
                 return 0;
             }
 
-            this.isProcessing = true;
+            isProcessing = true;
 
             int processedEvents = 0;
 
-            while (this._newEvents.Count > 0)
+            while (_newEvents.Count > 0)
             {
-                this._currentEvents.AddRange(this._newEvents);
-                this._newEvents.Clear();
+                _currentEvents.AddRange(_newEvents);
+                _newEvents.Clear();
 
-                foreach(GameEvent e in this._currentEvents)
+                foreach(GameEvent e in _currentEvents)
                 {
-                    this.ProcessEvent(e);
+                    ProcessEvent(e);
                     ++processedEvents;
                 }
 
-                this._currentEvents.Clear();
+                _currentEvents.Clear();
             }
 
-            this.isProcessing = false;
+            isProcessing = false;
 
             return processedEvents;
         }

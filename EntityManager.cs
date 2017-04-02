@@ -27,7 +27,7 @@ namespace ECS
             if (Entities.Any(ent => ent.Id == entityId))
             {
                 //duplicate
-                throw new Exception();
+                throw new Exception("Duplicate entity id: "+entityId);
             }
 
             if (string.IsNullOrEmpty(entityId))

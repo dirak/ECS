@@ -44,11 +44,11 @@ namespace ECS
             ownerManager.ComponentRemoved(this);
         }
 
-        public IComponent GetComponent<TComponent>()
+        public TComponent GetComponent<TComponent>()
             where TComponent : IComponent
         {
             TComponent match = Components.OfType<TComponent>().FirstOrDefault();
-            if (match != null) return (TComponent) match;
+            if (match != null) return match;
 
             throw new Exception();
             //component does not exist
