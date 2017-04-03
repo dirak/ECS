@@ -10,6 +10,8 @@ namespace ECS
     {
 
         private List<Entity> _activeEntities;
+        private Stack<Entity> _inactiveEntities;
+        private Dictionary<Type, Stack<IComponent>> _inactiveComponents;
 
         public List<Entity> Entities
         {
@@ -17,9 +19,25 @@ namespace ECS
             set { _activeEntities = value; }
         }
 
+        public int ActiveEntities
+        {
+            get { return _activeEntities.Count; }
+        }
+        public int InactiveEntities
+        {
+            get { return _inactiveEntities.Count; }
+        }
+
         public EntityManager()
         {
             _activeEntities = new List<Entity>();
+            _inactiveEntities = new Stack<Entity>();
+            _inactiveComponents = new Dictionary<Type, Stack<IComponent>>();
+
+            for(var i = 0; i < 1000; i++)
+            {
+                _inactiveEntities.Push(new Entity("_cached_" + i, this));
+            }
         }
 
         public Entity MakeEntity(string entityId)
@@ -33,11 +51,19 @@ namespace ECS
             if (string.IsNullOrEmpty(entityId))
             {
                 //invalid Id
-                throw new Exception();
+                throw new Exception("Invalid entity id: "+entityId);
             }
-
-            Entity newEntity = new Entity(entityId, this);
-
+            Entity newEntity;
+            if (_inactiveEntities.Count > 0)
+            {
+                newEntity = _inactiveEntities.Pop();
+                newEntity.removeComponents();
+                newEntity.Id = entityId;
+            }
+            else
+            {
+                newEntity = new Entity(entityId, this);
+            }
             Entities.Add(newEntity);
             EventManager eManager = EventManager.getInstance();
             GameEvent _event = new GameEvent(ECSEventTypes.EntityAdded, this, new EntityEventArgs(null, newEntity));
@@ -54,18 +80,14 @@ namespace ECS
             //throw exception for no entity
         }
 
-        public void destroyEntity(ref Entity entity)
+        public void destroyEntity(string entityId)
         {
-            if (!_activeEntities.Contains(entity))
-            {
-                throw new Exception();
-                //throw exception for no entity
-            }
+            Entity entity = getEntity(entityId);
             _activeEntities.Remove(entity);
             EventManager eManager = EventManager.getInstance();
             GameEvent _event = new GameEvent(ECSEventTypes.EntityRemoved, this, new EntityEventArgs(null, entity));
             eManager.QueueEvent(_event);
-            entity = null; //clear the ref
+            _inactiveEntities.Push(entity);
         }
 
         internal void ComponentAdded(Entity entity)

@@ -8,6 +8,13 @@ namespace ECS
 {
     public abstract class EntitySystem
     {
+        public float DeltaToRun
+        {
+            get; set;
+        }
+
+        private float _cumulative_time;
+
         public EntityManager EntityManager { get; set; }
         public List<Entity> Compatible { get; private set; }
 
@@ -15,6 +22,8 @@ namespace ECS
 
         public EntitySystem(EntityManager manager, params Type[] compatibleTypes)
         {
+            _cumulative_time = 0.0f;
+
             if (compatibleTypes.Any(t => t.IsAssignableFrom(typeof(IComponent))))
             {
                 throw new Exception();
@@ -44,6 +53,18 @@ namespace ECS
         protected virtual List<Entity> GetCompatibleInManager()
         {
             return EntityManager.Entities.Where(ent => ent.hasComponents(CompatibleTypes)).ToList();
+        }
+
+        public abstract void Update(float delta);
+
+        public void Run(float delta)
+        {
+            _cumulative_time += delta;
+            if(_cumulative_time >= DeltaToRun)
+            {
+                _cumulative_time = 0.0f;
+                Update(DeltaToRun + delta);
+            }
         }
     }
 }

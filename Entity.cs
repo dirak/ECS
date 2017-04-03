@@ -13,9 +13,9 @@ namespace ECS
 
         public Entity(string entityId, EntityManager entityManager)
         {
-            this.Id = entityId;
-            this.ownerManager = entityManager;
-            this.Components = new List<IComponent>();
+            Id = entityId;
+            ownerManager = entityManager;
+            Components = new List<IComponent>();
         }
 
         public void addComponent(IComponent Component)
@@ -33,7 +33,7 @@ namespace ECS
         public void removeComponent<TComponent>()
             where TComponent : IComponent
         {
-            if (!this.HasComponent<TComponent>())
+            if (!HasComponent<TComponent>())
             {
                 throw new Exception();
                 //component doesn't exist
@@ -42,6 +42,11 @@ namespace ECS
             IComponent remove = GetComponent<TComponent>();
             Components.Remove(remove);
             ownerManager.ComponentRemoved(this);
+        }
+
+        public void removeComponents()
+        {
+            Components = new List<IComponent>();
         }
 
         public TComponent GetComponent<TComponent>()
