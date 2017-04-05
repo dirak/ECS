@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECS
 {
@@ -14,6 +12,7 @@ namespace ECS
         }
 
         private float _cumulative_time;
+        protected bool _update_flag;
 
         public EntityManager EntityManager { get; set; }
         public List<Entity> Compatible { get; private set; }
@@ -23,7 +22,7 @@ namespace ECS
         public EntitySystem(EntityManager manager, params Type[] compatibleTypes)
         {
             _cumulative_time = 0.0f;
-
+            _update_flag = false;
             if (compatibleTypes.Any(t => t.IsAssignableFrom(typeof(IComponent))))
             {
                 throw new Exception();
@@ -47,6 +46,12 @@ namespace ECS
 
         private void OnManagerEntityChanged(GameEvent e)
         {
+            //Compatible = GetCompatibleInManager();
+            _update_flag = true;//should further subscribe to individual components instead of all
+        }
+
+        protected void RefreshComponents()
+        {
             Compatible = GetCompatibleInManager();
         }
 
@@ -63,6 +68,11 @@ namespace ECS
             if(_cumulative_time >= DeltaToRun)
             {
                 _cumulative_time = 0.0f;
+                if(_update_flag)
+                {
+                    _update_flag = false;
+                    RefreshComponents();
+                }
                 Update(DeltaToRun + delta);
             }
         }
