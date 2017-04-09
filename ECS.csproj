@@ -45,6 +45,7 @@
     <Compile Include="EntityManager.cs" />
     <Compile Include="EntitySystem.cs" />
     <Compile Include="EventManager.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="IComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
