@@ -114,6 +114,11 @@ namespace ECS
             _newEvents.Add(e);
         }
 
+        public void QueueEvent(object eventType, object sender, GameEventArgs args)
+        {
+            QueueEvent(new GameEvent(eventType, sender, args));
+        }
+
         public void registerListener(object eventType, GameEventHandler callback)
         {
             if(_listeners.ContainsKey(eventType))

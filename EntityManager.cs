@@ -40,7 +40,7 @@ namespace ECS
             }
         }
 
-        public Entity MakeEntity(string entityId)
+        public Entity makeEntity(string entityId)
         {
             if (Entities.Any(ent => ent.Id == entityId))
             {
